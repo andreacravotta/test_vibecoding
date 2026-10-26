@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mappa Mentale Interattiva</title>
+    <!-- Libreria D3.js via CDN affidabile -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #mindmap {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        #mindmap:active {
+            cursor: grabbing;
+        }
+        /* Controlli rapidi in alto a sinistra */
+        .controls {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+        }
+        .controls button {
+            background: #1f293d;
+            color: #e5e7eb;
+            border: 1px solid #374151;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .controls button:hover {
+            background: #374151;
+            color: #ffffff;
+        }
+        /* Nodi */
+        .node {
+            cursor: pointer;
+        }
+        .node rect {
+            stroke-width: 1.5px;
+            rx: 12;
+            ry: 12;
+            transition: filter 0.2s;
+        }
+        .node:hover rect {
+            filter: brightness(1.25);
+        }
+        .node text {
+            font-size: 13px;
+            font-weight: 500;
+            fill: #ffffff;
+            pointer-events: none;
+            dominant-baseline: central;
+        }
+        /* Cerchio indicatore sui nodi con figli */
+        .toggle-circle {
+            fill: #ffffff;
+            stroke-width: 2px;
+        }
+        /* Linee di collegamento morbide */
+        .link {
+            fill: none;
+            stroke: #475569;
+            stroke-width: 1.8px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="expandAll()">Espandi Tutto</button>
+        <button onclick="collapseAll()">Comprimi Tutto</button>
+        <button onclick="resetZoom()">Centra Vista</button>
+    </div>
+
+    <div id="mindmap"></div>
+
+    <script>
+        // Dati estratti dall'immagine
+        const treeData = {
+            name: "Progetto Inclusione: Percorsi di Crescita e Impresa Sociale",
+            children: [
+                {
+                    name: "Quale - Quadro EntreComp",
+                    children: [
+                        {
+                            name: "Definizione",
+                            children: [
+                                { name: "Azioni in apprendimento reale" },
+                                { name: "Creare valore per gli altri" },
+                                { name: "Riconoscere le sfide e le direzioni" }
+                            ]
+                        },
+                        {
+                            name: "Caratteristiche",
+                            children: [
+                                { name: "Competenza chiave trasversale" },
+                                { name: "Apprendibile e migliorabile" },
+                                { name: "Attraverso la pratica" }
+                            ]
+                        },
+                        {
+                            name: "Struttura del Quadro",
+                            children: [
+                                { name: "Idee e Opportunità (3)" },
+                                { name: "Risorse e Asset (3)" },
+                                { name: "In Azione (3)" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "4. Le Competenze Chiave",
+                    children: [
+                        {
+                            name: "Area Idee e Opportunità",
+                            children: [
+                                { name: "Scoprire i bisogni del PT" },
+                                { name: "Generazione di nuove idee" },
+                                { name: "Visione del futuro" },
+                                { name: "Due - sola - relazionale" },
+                                { name: "Principi etici e di sostenibilità" }
+                            ]
+                        },
+                        {
+                            name: "Area Risorse",
+                            children: [
+                                { name: "Autoconsapevolezza ed Efficacia" },
+                                { name: "Motivazione e perseveranza" },
+                                { name: "Mobilitare risorse umane e mater..." },
+                                { name: "Conoscenze economico - finanziarie" },
+                                { name: "Mobilitare e coinvolgere gli altri" }
+                            ]
+                        },
+                        {
+                            name: "Area in Azione",
+                            children: [
+                                { name: "Iniziativa Personale" },
+                                { name: "Pianificaz. ed organizzazione" },
+                                { name: "Gestire incertezza, rischio" },
+                                { name: "Lavorare con gli altri" },
+                                { name: "Imparare dall'esperienza" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Struttura del Modello (Fasi e Azioni)",
+                    children: [
+                        {
+                            name: "Fase 1: Mappatura delle Competenze",
+                            children: [
+                                { name: "Fase 1: Assessment ex ante/ex post" },
+                                { name: "Criteri di efficacia e misurazione" },
+                                { name: "Fase 1: Autovalutazione con ex aequo" },
+                                { name: "Analisi dei 4 step macro-referenziali" },
+                                { name: "Schede di valutazione destrutturate" }
+                            ]
+                        },
+                        {
+                            name: "Fase 2: Sperimentazione in Azione",
+                            children: [
+                                { name: "Fase 2a: Ricerca di opportunità nel..." },
+                                { name: "Modulo 1: Analisi del Contesto" },
+                                { name: "Fase 2b: Ruoli e Leadership per il Pro..." },
+                                { name: "Monitoraggio in itinere" },
+                                { name: "Fase 2c: Sviluppo del Business Concept" },
+                                { name: "Pitch e Business Plan - Sostenibilità" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Metodologia e Strumenti",
+                    children: [
+                        { name: "Approccio pratico/learning-by-doing" },
+                        { name: "Valutazione di competenze non formali" },
+                        { name: "Tool: Log Design Orizzonti / EntreComp" },
+                        { name: "Piattaforme WEB e percorsi gamification" },
+                        { name: "Simulazioni e case history in realtà" }
+                    ]
+                }
+            ]
+        };
+
+        const container = document.getElementById("mindmap");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const svg = d3.select("#mindmap").append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+
+        const g = svg.append("g");
+
+        // Abilita lo zoom con mouse e gesture
+        const zoom = d3.zoom()
+            .scaleExtent([0.3, 3])
+            .on("zoom", (event) => g.attr("transform", event.transform));
+
+        svg.call(zoom);
+
+        const tree = d3.tree()
+            .nodeSize([45, 280]) // Distanza verticale tra nodi (45px) e orizzontale tra livelli (280px)
+            .separation((a, b) => (a.parent === b.parent ? 1 : 1.2));
+
+        let idCounter = 0;
+        const root = d3.hierarchy(treeData, d => d.children);
+        root.x0 = height / 2;
+        root.y0 = 0;
+
+        // Palette cromatica per livello gerarchico
+        const colors = [
+            { bg: "#3b2866", stroke: "#8b5cf6" }, // Livello 0 (Radice - Viola)
+            { bg: "#1e3a5f", stroke: "#38bdf8" }, // Livello 1 (Rami primari - Blu)
+            { bg: "#064e3b", stroke: "#34d399" }, // Livello 2 (Sottorami - Verde scuro)
+            { bg: "#134e4a", stroke: "#2dd4bf" }  // Livello 3 (Foglie - Teal)
+        ];
+
+        function getNodeColor(depth) {
+            return colors[Math.min(depth, colors.length - 1)];
+        }
+
+        update(root);
+        resetZoom();
+
+        function update(source) {
+            const treeLayout = tree(root);
+            const nodes = treeLayout.descendants();
+            const links = treeLayout.links();
+
+            // Calcolo posizione orizzontale fissa per livello
+            nodes.forEach(d => {
+                d.y = d.depth * 280;
+            });
+
+            // GESTIONE NODI
+            const node = g.selectAll('g.node')
+                .data(nodes, d => d.id || (d.id = ++idCounter));
+
+            const nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${source.y0},${source.x0})`)
+                .on('click', (event, d) => {
+                    if (d.children) {
+                        d._children = d.children;
+                        d.children = null;
+                    } else if (d._children) {
+                        d.children = d._children;
+                        d._children = null;
+                    }
+                    update(d);
+                });
+
+            // Rettangolo con angoli arrotondati (Pillola)
+            nodeEnter.append('rect')
+                .attr('height', 30)
+                .attr('y', -15)
+                .attr('fill', d => getNodeColor(d.depth).bg)
+                .attr('stroke', d => getNodeColor(d.depth).stroke);
+
+            // Testo etichetta
+            nodeEnter.append('text')
+                .attr('x', 14)
+                .attr('y', 0)
+                .text(d => d.data.name);
+
+            // Cerchio interattivo sulla destra per indicare la presenza di figli
+            nodeEnter.append('circle')
+                .attr('class', 'toggle-circle')
+                .attr('r', 5)
+                .attr('cy', 0);
+
+            // Calcola la larghezza del rettangolo in base al testo effettivo
+            nodeEnter.each(function(d) {
+                const textElem = d3.select(this).select('text').node();
+                const textWidth = textElem.getComputedTextLength();
+                d.boxWidth = textWidth + 30;
+
+                d3.select(this).select('rect')
+                    .attr('width', d.boxWidth);
+
+                d3.select(this).select('.toggle-circle')
+                    .attr('cx', d.boxWidth)
+                    .attr('stroke', getNodeColor(d.depth).stroke)
+                    .style('display', (d.children || d._children) ? 'block' : 'none');
+            });
+
+            // Animazione di apertura
+            const nodeUpdate = nodeEnter.merge(node);
+
+            nodeUpdate.transition()
+                .duration(350)
+                .attr('transform', d => `translate(${d.y},${d.x})`);
+
+            // Aggiorna lo stato visivo del pallino (+/-)
+            nodeUpdate.select('.toggle-circle')
+                .style('display', d => (d.children || d._children) ? 'block' : 'none')
+                .attr('fill', d => d._children ? getNodeColor(d.depth).stroke : '#ffffff');
+
+            // Animazione di chiusura
+            const nodeExit = node.exit().transition()
+                .duration(350)
+                .attr('transform', d => `translate(${source.y},${source.x})`)
+                .remove();
+
+            nodeExit.select('rect').attr('width', 0);
+            nodeExit.select('text').style('fill-opacity', 0);
+
+            // GESTIONE CURVE DI COLLEGAMENTO
+            const link = g.selectAll('path.link')
+                .data(links, d => d.target.id);
+
+            const linkEnter = link.enter().insert('path', 'g')
+                .attr('class', 'link')
+                .attr('d', d => {
+                    const o = { x: source.x0, y: source.y0 + (source.boxWidth || 0) };
+                    return diagonal(o, o);
+                });
+
+            linkEnter.merge(link).transition()
+                .duration(350)
+                .attr('d', d => {
+                    const start = { x: d.source.x, y: d.source.y + d.source.boxWidth };
+                    const end = { x: d.target.x, y: d.target.y };
+                    return diagonal(start, end);
+                });
+
+            link.exit().transition()
+                .duration(350)
+                .attr('d', d => {
+                    const o = { x: source.x, y: source.y + (source.boxWidth || 0) };
+                    return diagonal(o, o);
+                })
+                .remove();
+
+            // Salva le coordinate per la prossima animazione
+            nodes.forEach(d => {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        }
+
+        // Calcola la curva cubica di Bézier tra l'uscita del nodo genitore e l'ingresso del nodo figlio
+        function diagonal(s, d) {
+            return `M ${s.y} ${s.x}
+                    C ${(s.y + d.y) / 2} ${s.x},
+                      ${(s.y + d.y) / 2} ${d.x},
+                      ${d.y} ${d.x}`;
+        }
+
+        // Funzioni per la barra di controllo
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        function expand(d) {
+            if (d._children) {
+                d.children = d._children;
+                d.children.forEach(expand);
+                d._children = null;
+            } else if (d.children) {
+                d.children.forEach(expand);
+            }
+        }
+
+        function collapseAll() {
+            if (root.children) {
+                root.children.forEach(collapse);
+                update(root);
+                resetZoom();
+            }
+        }
+
+        function expandAll() {
+            expand(root);
+            update(root);
+        }
+
+        function resetZoom() {
+            svg.transition().duration(500).call(
+                zoom.transform,
+                d3.zoomIdentity.translate(80, height / 2).scale(0.85)
+            );
+        }
+
+        window.addEventListener('resize', () => {
+            resetZoom();
+        });
+    </script>
+</body>
+</html>
