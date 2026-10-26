@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repository Risorse e Link Utili</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        p.desc {
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            margin: 32px 0 16px;
+            color: #38bdf8;
+            border-bottom: 1px solid #1f293d;
+            padding-bottom: 8px;
+        }
+        .link-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .link-item {
+            background: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+        .link-item:hover {
+            background: #18223a;
+            border-color: #374151;
+            transform: translateX(4px);
+        }
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .link-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .link-domain {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .link-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Torna alla Home</a>
+        
+        <h1>Repository Risorse e Link Utili</h1>
+        <p class="desc">Riferimenti ufficiali, documentazione europea sul quadro di riferimento EntreComp e strumenti a supporto dell'imprenditoria sociale.</p>
+
+        <!-- Sezione Quadro Europeo -->
+        <h2 class="section-title">1. Quadro EntreComp e Competenze</h2>
+        <ul class="link-list">
+            <li>
+                <a href="https://joint-research-centre.ec.europa.eu/entrecomp-entrepreneurship-competence-framework_en" target="_blank" rel="noopener" class="link-item">
+                    <div class="link-header">
+                        <span class="link-title">EntreComp: Guida Ufficiale della Commissione Europea</span>
+                        <span class="link-domain">ec.europa.eu ↗</span>
+                    </div>
+                    <span class="link-desc">Panoramica completa del framework, delle 3 macro-aree e dei 15 descrittori di competenza imprenditoriale.</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://entrecomp.com/" target="_blank" rel="noopener" class="link-item">
+                    <div class="link-header">
+                        <span class="link-title">EntreComp Community</span>
+                        <span class="link-domain">entrecomp.com ↗</span>
+                    </div>
+                    <span class="link-desc">Piattaforma collaborativa con case study pratici, toolkit di apprendimento ed esempi applicativi per formatori.</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Sezione Impresa Sociale -->
+        <h2 class="section-title">2. Strumenti Operativi e Impresa Sociale</h2>
+        <ul class="link-list">
+            <li>
+                <a href="https://www.socialenterprisebsr.net/" target="_blank" rel="noopener" class="link-item">
+                    <div class="link-header">
+                        <span class="link-title">Social Business Model Canvas</span>
+                        <span class="link-domain">socialenterprise.net ↗</span>
+                    </div>
+                    <span class="link-desc">Modelli e schede guidate per la prototipazione e sostenibilità dell'idea di business inclusivo.</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.eu-startups.com/" target="_blank" rel="noopener" class="link-item">
+                    <div class="link-header">
+                        <span class="link-title">Guida alla creazione di Pitch & Business Plan</span>
+                        <span class="link-domain">risorse-didattiche ↗</span>
+                    </div>
+                    <span class="link-desc">Linee guida pratiche per la sintesi esecutiva e la presentazione pubblica del progetto.</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
